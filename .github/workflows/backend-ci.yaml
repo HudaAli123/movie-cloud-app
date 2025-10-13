@@ -1,0 +1,16 @@
+name: BE CI
+on:
+  pull_request: { paths: [ 'backend/**' ] }
+  push: { branches: [ main ], paths: [ 'backend/**' ] }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: backend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: python -m pip install --upgrade pip pipenv
+      - run: pipenv install --deploy --dev
+      - run: pipenv run flake8 .
+      - run: pipenv run pytest -q
