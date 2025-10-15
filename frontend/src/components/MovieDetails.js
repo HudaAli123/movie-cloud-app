@@ -7,8 +7,13 @@ export default function MovieDetails({ movie }) {
   const base = process.env.REACT_APP_MOVIE_API_URL;
   useEffect(() => {
     let cancelled = false;
-    axios.get(`${base}/movies/${movie.id}`).then(res => !cancelled && setPayload(res.data)).catch(() => setPayload(null));
-    return () => { cancelled = true; };
+    axios
+      .get(`${base}/movies/${movie.id}`)
+      .then((res) => !cancelled && setPayload(res.data))
+      .catch(() => setPayload(null));
+    return () => {
+      cancelled = true;
+    };
   }, [base, movie]);
   if (!payload) return <p>Loading…</p>;
   return (

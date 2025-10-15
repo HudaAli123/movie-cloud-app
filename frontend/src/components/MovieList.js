@@ -7,12 +7,17 @@ export default function MovieList({ onMovieClick }) {
   const base = process.env.REACT_APP_MOVIE_API_URL;
   useEffect(() => {
     let cancelled = false;
-    axios.get(`${base}/movies`).then(res => !cancelled && setItems(res.data.movies)).catch(() => setItems([]));
-    return () => { cancelled = true; };
+    axios
+      .get(`${base}/movies`)
+      .then((res) => !cancelled && setItems(res.data.movies))
+      .catch(() => setItems([]));
+    return () => {
+      cancelled = true;
+    };
   }, [base]);
   return (
     <ul>
-      {items.map(m => (
+      {items.map((m) => (
         <li key={m.id}>
           <button onClick={() => onMovieClick(m)}>{m.title}</button>
         </li>
