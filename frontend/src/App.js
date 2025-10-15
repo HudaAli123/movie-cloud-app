@@ -9,7 +9,9 @@ export default function App() {
     <div className="container">
       <h1>Movie Catalog</h1>
       <div className="grid">
-        <div className="left"><Catalog onMovieClick={setActive} /></div>
+        <div className="left">
+          <Catalog onMovieClick={setActive} />
+        </div>
         <div className="right">{active ? <Details movie={active} /> : <p>Select a movie…</p>}</div>
       </div>
     </div>

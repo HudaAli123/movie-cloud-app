@@ -24,5 +24,5 @@ export default function MovieDetails({ movie }) {
   );
 }
 MovieDetails.propTypes = {
-  movie: PropTypes.shape({ id: PropTypes.string.isRequired, title: PropTypes.string.isRequired }).isRequired
+  movie: PropTypes.shape({ id: PropTypes.string.isRequired, title: PropTypes.string.isRequired }).isRequired,
 };
