@@ -5,14 +5,15 @@ ENV REACT_APP_MOVIE_API_URL=${REACT_APP_MOVIE_API_URL}
 
 WORKDIR /app
 
-# Copy dependdency files
-COPY package*.json ./
+# Copy dependency files from the frontend subfolder
+COPY frontend/package.json ./package.json
+COPY frontend/package-lock.json ./package-lock.json
 
-# Install packages
-RUN npm ci
+# Install packages (prefer ci, fallback to install)
+RUN npm ci || npm install
 
-# Copy code
-COPY . .
+# Copy app source
+COPY frontend/ .
 
 # Build the app
 RUN npm run build
