@@ -10,5 +10,8 @@ def create_app():
     app.register_blueprint(movies_blueprint, url_prefix="")
     return app
 
+# Export a module-level WSGI application for Gunicorn ("backend:app")
+app = create_app()
+
 if __name__ == "__main__":
-    create_app().run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
