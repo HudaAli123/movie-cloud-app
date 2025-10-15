@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-# movie-cloud-app
-=======
-# Movie Catalog — Original Refactor
-React + Flask with separate CI/CD and Kustomize.
-See .github/workflows for pipelines.
->>>>>>> e3c612e (Initial commit: original FE/BE + CI/CD)
-=======
 # Movie Catalog — React + Flask (CI/CD + Kustomize)
 
-This repository contains a React frontend and a Flask backend, each with separate CI (tests/build) and CD (containerize + deploy to EKS using Kustomize).
+This repository contains a React frontend and a Flask backend, each with separate CI (tests/build) and CD (containerize + deploy). Kustomize manifests are provided for Kubernetes; Render configs demonstrated for non-AWS deployment.
 
 - Frontend app (React, CRA)
 - Backend API (Flask, CORS enabled)
@@ -21,8 +12,8 @@ Repository: `https://github.com/HudaAli123/movie-cloud-app`
 
 ## Live URLs (for review)
 
-- Frontend URL: <ADD_FINAL_FRONTEND_URL_HERE>
-- Backend URL: <ADD_FINAL_BACKEND_BASE_URL_HERE> (GET `/movies`)
+- Frontend URL: https://movie-cloud-app-1.onrender.com
+- Backend URL: https://movie-cloud-app.onrender.com (GET `/movies`)
 
 If the infrastructure is deleted before review, see the Screenshots and kubectl outputs below.
 
@@ -51,9 +42,10 @@ Backend
 
 ```bash
 cd backend
-pip install pipenv --user
-pipenv install --dev
-pipenv run python -m backend
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+pip install -r requirements.txt
+python -m backend
 ```
 
 ## CI/CD Overview
@@ -110,5 +102,3 @@ kubectl describe svc <backend-svc-name>
 ## Notes
 
 - If the cluster is torn down before review, ensure all requested screenshots and kubectl outputs above are committed.
-- Replace the `<ADD_FINAL_FRONTEND_URL_HERE>` and `<ADD_FINAL_BACKEND_BASE_URL_HERE>` placeholders before submission.
->>>>>>> 9c2a2c6 (Backend: switch to Gunicorn and fix Dockerfile paths for Render)
