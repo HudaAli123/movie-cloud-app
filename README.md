@@ -22,8 +22,10 @@ If the infrastructure is deleted before review, see the Screenshots and kubectl 
 ## How to Verify
 
 1. Open the Frontend URL and confirm the list of movies renders. Click a movie to view details.
-2. Call the Backend endpoint: `GET {BACKEND_URL}/movies` should return JSON with a `movies` array.
-3. Optionally: `GET {BACKEND_URL}/movies/123` returns a single movie.
+2. **Backend API is JSON-only** - Open the Backend API endpoint in your browser:
+   - `https://movie-cloud-app.onrender.com/movies` (returns JSON list)
+   - `https://movie-cloud-app.onrender.com/movies/123` (returns JSON for one movie)
+   - Note: Visiting the root URL (`https://movie-cloud-app.onrender.com/`) returns 404 - this is expected as it's an API server.
 
 ## API
 
