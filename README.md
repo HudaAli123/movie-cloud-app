@@ -15,6 +15,8 @@ Repository: `https://github.com/HudaAli123/movie-cloud-app`
 - Frontend URL: https://movie-cloud-app-1.onrender.com
 - Backend URL: https://movie-cloud-app.onrender.com (GET `/movies`)
 
+**Note:** If these URLs respond slowly (timeout) on first visit, wait ~30 seconds and refresh. Render free tier spins down services after ~15 minutes of inactivity; they wake up on the first request.
+
 If the infrastructure is deleted before review, see the Screenshots and kubectl outputs below.
 
 ## How to Verify
