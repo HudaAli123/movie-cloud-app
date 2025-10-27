@@ -158,17 +158,26 @@ jobs:
           echo "  - Namespace: default"
           echo "  - Deployment: backend"
           
+          # Update the deployment YAML with the actual image
+          sed -i "s|image: backend|image: ${{ steps.build-image.outputs.image }}|g" ./backend/k8s/deployment.yaml
+          
           if kubectl get deployment backend -n default 2>/dev/null; then
             echo "✅ Found existing backend deployment"
             echo "🔄 Updating deployment with new image..."
-            kubectl set image deployment/backend backend=${{ steps.build-image.outputs.image }} -n default
+            kubectl apply -f ./backend/k8s/deployment.yaml
             echo "⏳ Waiting for rollout to complete..."
             kubectl rollout status deployment/backend -n default
-            echo "✅ Deployment completed successfully"
+            echo "✅ Deployment updated successfully"
           else
-            echo "⚠️ EKS deployment not accessible - demonstrating deployment process"
-            echo "🚀 Would execute deployment commands:"
-            echo "  kubectl set image deployment/backend backend=${{ steps.build-image.outputs.image }} -n default"
-            echo "  kubectl rollout status deployment/backend -n default"
+            echo "🆕 Creating new backend deployment..."
+            kubectl apply -f ./backend/k8s/deployment.yaml
+            kubectl apply -f ./backend/k8s/service.yaml
+            echo "⏳ Waiting for deployment to be ready..."
+            kubectl rollout status deployment/backend -n default
+            echo "✅ Deployment created successfully"
           fi
+          
+          # Show the service details
+          echo "🌐 Service details:"
+          kubectl get service backend -o wide
         continue-on-error: true

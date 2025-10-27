@@ -156,17 +156,26 @@ jobs:
           echo "  - Namespace: default"
           echo "  - Deployment: frontend"
           
+          # Update the deployment YAML with the actual image
+          sed -i "s|image: frontend|image: ${{ steps.build-image.outputs.image }}|g" ./frontend/k8s/deployment.yaml
+          
           if kubectl get deployment frontend -n default 2>/dev/null; then
             echo "✅ Found existing frontend deployment"
             echo "🔄 Updating deployment with new image..."
-            kubectl set image deployment/frontend frontend=${{ steps.build-image.outputs.image }} -n default
+            kubectl apply -f ./frontend/k8s/deployment.yaml
             echo "⏳ Waiting for rollout to complete..."
             kubectl rollout status deployment/frontend -n default
-            echo "✅ Deployment completed successfully"
+            echo "✅ Deployment updated successfully"
           else
-            echo "⚠️ EKS deployment not accessible - demonstrating deployment process"
-            echo "🚀 Would execute deployment commands:"
-            echo "  kubectl set image deployment/frontend frontend=${{ steps.build-image.outputs.image }} -n default"
-            echo "  kubectl rollout status deployment/frontend -n default"
+            echo "🆕 Creating new frontend deployment..."
+            kubectl apply -f ./frontend/k8s/deployment.yaml
+            kubectl apply -f ./frontend/k8s/service.yaml
+            echo "⏳ Waiting for deployment to be ready..."
+            kubectl rollout status deployment/frontend -n default
+            echo "✅ Deployment created successfully"
           fi
+          
+          # Show the service details
+          echo "🌐 Service details:"
+          kubectl get service frontend -o wide
         continue-on-error: true
