@@ -32,10 +32,10 @@ Secret Name: AWS_REGION
 Secret Value: us-east-1
 
 Secret Name: EKS_CLUSTER_NAME
-Secret Value: [Your EKS Cluster Name]
+Secret Value: movie-cloud-cluster
 
 Secret Name: REACT_APP_MOVIE_API_URL
-Secret Value: [Your Backend Service URL]
+Secret Value: http://backend-service.default.svc.cluster.local
 ```
 
 ## AWS Infrastructure Requirements:
