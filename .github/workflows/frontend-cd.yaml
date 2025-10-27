@@ -94,12 +94,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-        continue-on-error: true
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        continue-on-error: true
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -108,21 +106,15 @@ jobs:
           ECR_REPOSITORY: frontend
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          echo "✅ ECR integration configured"
-          echo "📦 Would build: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          echo "🔗 Build args: REACT_APP_MOVIE_API_URL=${{ secrets.REACT_APP_MOVIE_API_URL }}"
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./frontend/Dockerfile --build-arg REACT_APP_MOVIE_API_URL=${{ secrets.REACT_APP_MOVIE_API_URL }} .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-        continue-on-error: true
 
       - name: Update kubeconfig
         run: |
-          echo "✅ EKS integration configured"
-          echo "🔧 Would update kubeconfig for cluster: ${{ secrets.EKS_CLUSTER_NAME }}"
-        continue-on-error: true
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
       - name: Deploy to EKS
         run: |
-          echo "✅ EKS deployment configured"
-          echo "🚀 Would deploy frontend to EKS cluster"
-          echo "📋 Deployment: kubectl set image deployment/frontend frontend=${{ steps.build-image.outputs.image }}"
-        continue-on-error: true
+          kubectl set image deployment/frontend frontend=${{ steps.build-image.outputs.image }} -n default
+          kubectl rollout status deployment/frontend -n default
