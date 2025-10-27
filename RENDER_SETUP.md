@@ -1,23 +1,17 @@
-# Render Deployment Setup Guide
+# AWS EKS Deployment Setup Guide
 
-## Your Specific URLs
+## Required GitHub Secrets
 
-Based on your Render services, here are the URLs you need:
+To make the CI/CD pipelines work with AWS EKS, you need to set up the following GitHub Secrets in your repository:
 
-- **Frontend URL**: `https://movie-cloud-app-1.onrender.com`
-- **Backend URL**: `https://movie-cloud-app.onrender.com`
-- **Backend API Endpoint**: `https://movie-cloud-app.onrender.com/movies`
+### AWS Credentials:
+- `AWS_ACCESS_KEY_ID`: Your AWS access key ID
+- `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key
+- `AWS_REGION`: Your AWS region (e.g., `us-east-1`)
+- `EKS_CLUSTER_NAME`: Your EKS cluster name
 
-## GitHub Secrets Required
-
-To make the CI/CD pipelines work with Render, you need to set up the following GitHub Secrets in your repository:
-
-### Frontend CD Pipeline Secrets:
-- `FRONTEND_URL`: `https://movie-cloud-app-1.onrender.com`
-- `REACT_APP_MOVIE_API_URL`: `https://movie-cloud-app.onrender.com`
-
-### Backend CD Pipeline Secrets:
-- `BACKEND_URL`: `https://movie-cloud-app.onrender.com`
+### Application Configuration:
+- `REACT_APP_MOVIE_API_URL`: The backend API URL for the frontend to connect to
 
 ## How to Set Up GitHub Secrets:
 
@@ -28,29 +22,31 @@ To make the CI/CD pipelines work with Render, you need to set up the following G
 5. Add each secret with the appropriate name and value:
 
 ```
-Secret Name: FRONTEND_URL
-Secret Value: https://movie-cloud-app-1.onrender.com
+Secret Name: AWS_ACCESS_KEY_ID
+Secret Value: [Your AWS Access Key ID]
 
-Secret Name: BACKEND_URL  
-Secret Value: https://movie-cloud-app.onrender.com
+Secret Name: AWS_SECRET_ACCESS_KEY
+Secret Value: [Your AWS Secret Access Key]
+
+Secret Name: AWS_REGION
+Secret Value: us-east-1
+
+Secret Name: EKS_CLUSTER_NAME
+Secret Value: [Your EKS Cluster Name]
 
 Secret Name: REACT_APP_MOVIE_API_URL
-Secret Value: https://movie-cloud-app.onrender.com
+Secret Value: [Your Backend Service URL]
 ```
 
-## Render Service Configuration:
+## AWS Infrastructure Requirements:
 
-### Frontend Service:
-- **Build Command**: `npm ci && npm run build`
-- **Publish Directory**: `build`
-- **Environment Variables**:
-  - `REACT_APP_MOVIE_API_URL`: Your backend URL
+### ECR Repositories:
+- `frontend`: Repository for frontend Docker images
+- `backend`: Repository for backend Docker images
 
-### Backend Service:
-- **Build Command**: `pip install -r requirements.txt`
-- **Start Command**: `gunicorn --bind 0.0.0.0:$PORT backend:app`
-- **Environment Variables**:
-  - `PORT`: Automatically set by Render
+### EKS Cluster:
+- Running EKS cluster with proper IAM permissions
+- Deployments named `frontend` and `backend` in the `default` namespace
 
 ## Pipeline Features:
 
@@ -66,7 +62,9 @@ Secret Value: https://movie-cloud-app.onrender.com
 ✅ **Lint Job**: Runs linting with proper caching
 ✅ **Test Job**: Runs tests with proper caching
 ✅ **Build Job**: Builds Docker images with build args (frontend)
-✅ **Deploy Job**: Deploys to Render and verifies deployment
+✅ **ECR Login**: Uses aws-actions/amazon-ecr-login action
+✅ **ECR Push**: Builds, tags, and pushes Docker images to ECR
+✅ **EKS Deployment**: Updates deployments using kubectl
 ✅ **Manual Trigger**: Can be run manually via workflow_dispatch
 ✅ **Main Branch Trigger**: Runs automatically on pushes to main
 ✅ **Environment Variables**: Properly passes build args to Docker
@@ -80,7 +78,7 @@ Secret Value: https://movie-cloud-app.onrender.com
 ## Verification:
 
 After deployment, verify:
-- Frontend loads at your Render URL
+- Frontend loads at your EKS service URL
 - Backend API responds at `/movies` endpoint
 - Frontend can successfully fetch data from backend
 - Environment variables are properly set
@@ -88,6 +86,6 @@ After deployment, verify:
 ## Troubleshooting:
 
 - If tests fail, check the test output in the Actions tab
-- If deployment fails, verify your GitHub Secrets are set correctly
+- If deployment fails, verify your AWS credentials and EKS cluster access
 - If frontend can't connect to backend, check the `REACT_APP_MOVIE_API_URL` secret
-- Render services may take a few minutes to start up after deployment
+- Ensure ECR repositories exist and EKS cluster is running
