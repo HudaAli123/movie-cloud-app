@@ -6,12 +6,12 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  BACKEND_URL: https://movie-cloud-app.onrender.com
-
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,17 +21,27 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: pip-
+
       - name: Install dependencies
         run: |
-          cd backend
+          python -m pip install --upgrade pip
           pip install flake8
           pip install -r requirements.txt
 
       - name: Run lint
-        run: cd backend && flake8 . --max-line-length=88
+        run: flake8 . --max-line-length=88
 
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,14 +51,21 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: pip-
+
       - name: Install dependencies
         run: |
-          cd backend
+          python -m pip install --upgrade pip
           pip install pytest
           pip install -r requirements.txt
 
       - name: Run tests
-        run: cd backend && pytest -v
+        run: pytest -v
 
   build:
     runs-on: ubuntu-latest
@@ -68,8 +85,17 @@ jobs:
           push: false
           tags: backend:test
 
-      - name: Verify deployment
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Render
         run: |
-          echo "✅ Backend is deployed via Render at ${{ env.BACKEND_URL }}"
+          echo "✅ Backend deployed to Render"
+          echo "🌐 Backend URL: ${{ secrets.BACKEND_URL }}"
           echo "📝 Docker build successful"
-          curl -f ${{ env.BACKEND_URL }}/movies || echo "⚠️  Backend may be starting (Render spin-down)"
+          echo "🔗 Testing backend endpoint..."
+          curl -f ${{ secrets.BACKEND_URL }}/movies || echo "⚠️  Backend may be starting (Render spin-down)"
