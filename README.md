@@ -54,9 +54,9 @@ python -m backend
 
 ## CI/CD Overview
 
-- CI runs tests and builds on push/PR.
-- CD builds Docker images and deploys to ECR/EKS using Kustomize overlays in `frontend/k8s` and `backend/k8s`.
-- Workflows are under `.github/workflows`.
+- **CI pipelines** run on pull requests (lint, test, build). See `.github/workflows/*-ci.yaml`.
+- **CD pipelines** run on merge to main (lint, test, build Docker with build args). Actual deployment is via Render (see live URLs above). See `.github/workflows/*-cd.yaml`.
+- Kustomize manifests are in `frontend/k8s/` and `backend/k8s/` for Kubernetes deployments (not currently used with Render).
 
 ## Screenshots Required by Reviewers
 
